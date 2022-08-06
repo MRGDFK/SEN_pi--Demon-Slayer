@@ -30,13 +30,17 @@ int gameState = -1;
 char tanjiro[6][25] = { "Tanjiro\\dour1.png", "Tanjiro\\dour2.png", "Tanjiro\\dour3.png", "Tanjiro\\dour4.png", "Tanjiro\\dour5.png", "Tanjiro\\dour6.png" };
 char tanjirostand[25] = "Tanjiro\\kharayase.png";
 char tanjirowaterbreathing1[10][25] = { "water1\\wb1.png", "water1\\wb2.png", "water1\\wb3.png", "water1\\wb4.png", "water1\\wb5.png", "water1\\wb6.png", "water1\\wb7.png", "water1\\wb8.png", "water1\\wb9.png", "water1\\wb10.png" };
+char tanjirowaterbreathing1f[25] = "water1\\wb10.png";
 int tanjiroCordinateX = 450;
 int tanjiroCordinateY = 100;
+int waterattack1=450;
 int tanjiroIndex = 0;
 int tanjirowb1Index = 0;
 bool standPosition = true;
+bool fight1 = false;
+bool running = false;
 int standcount = 0;
-int dx;
+int dx=10;
 
 void iDraw()
 {
@@ -59,8 +63,8 @@ void iDraw()
 	{
 		int img3 = iLoadImage(play);
 		iShowImage(0, 0, 1920, 1080, img3);
-		//tanjiro
-		if (!standPosition)
+		//tanjiro stand and run
+		if (running)
 		{
 			int tandour = iLoadImage(tanjiro[tanjiroIndex]);
 			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tandour);
@@ -71,32 +75,34 @@ void iDraw()
 				tanjiroIndex = 0;
 				standPosition = true;
 			}
+
+		}
+		
+		//waterbreathing1 ATTACK 1
+
+		else if (fight1)
+		{
+			if (tanjiroCordinateX < 1470 && tanjiroCordinateX > 450)
+			{
+				int waterbreathing1 = iLoadImage(tanjirowaterbreathing1[tanjirowb1Index]);
+				iShowImage(waterattack1, tanjiroCordinateY, 250, 216, waterbreathing1);
+			}
+
 		}
 		else
 		{
 			int tanstand = iLoadImage(tanjirostand);
 			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tanstand);
 		}
-		//waterbreathing1
-		/*if (!standPosition)
-		{
-			if (tanjiroCordinateX < 1470 && tanjiroCordinateX > 450)
-			{
-				int waterbreathing1 = iLoadImage(tanjirowaterbreathing1[tanjirowb1Index]);
-				iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, waterbreathing1);
-				standcount++;
-				if (standcount >= 20)
-				{
-					standcount = 0;
-					tanjirowb1Index = 0;
-					//standPosition = true;
-				}
-			}
-			
-		}*/
+	
+
+		
+		
+		
 		
 		
 	}
+	//Store
 	else if (gameState == 1)
 	{
 		int img4 = iLoadImage(store);
@@ -163,21 +169,22 @@ void iKeyboard(unsigned char key)
 {
 	if (key == '\e')
 	{
-		if (tanjiroCordinateX<1400 || tanjiroCordinateX>450)
+		
+		if (waterattack1<1400 || waterattack1>450)
 		{
-			tanjiroCordinateX += 100;
+			waterattack1 += 50;
 			tanjirowb1Index++;
 
 			if (tanjirowb1Index >= 10)
 			{
 				tanjirowb1Index = 0;
 			}
+			running = false;
+			fight1 = true;
 			standPosition = false;
+
 		}
-		else
-		{
-			tanjiroCordinateX = 1400;
-		}
+		
 	}
 	
 	
@@ -206,7 +213,10 @@ void iSpecialKeyboard(unsigned char key)
 		{
 			tanjiroIndex = 0;
 		}
+		running = true;
+		fight1 = false;
 		standPosition = false;
+		
 	}
 	if (key == GLUT_KEY_LEFT)
 	{
@@ -218,6 +228,8 @@ void iSpecialKeyboard(unsigned char key)
 		{
 			tanjiroIndex = 5;
 		}
+		running = true;
+		fight1 = false;
 		standPosition = false;
 	}
 	
@@ -225,13 +237,22 @@ void iSpecialKeyboard(unsigned char key)
 	{
 		gameState = -1;
 	}
+	if (key == GLUT_KEY_END)
+	{
+		exit(0);
+	}
 	
 }
 
 void change()
 {
-//	tanjiroCordinateX += 100;
-
+	
+	waterattack1 += dx;
+	if (waterattack1 >= screenWidth || waterattack1 <= 0)
+		{
+			dx *= (-1);
+		}
+	
 
 }
 
@@ -253,7 +274,7 @@ int main(void)
 		bCordinate[i].y = sum;
 		sum += 150;
 	}
-	iSetTimer(100, change);
+	//iSetTimer(500, change);
 
 	iStart();
 	return 0;
