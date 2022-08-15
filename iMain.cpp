@@ -6,7 +6,13 @@ using namespace std;
 #define screenWidth 1920
 #define screenHeight 1080
 
+struct Life
+{
+	int x, y;
+	int height, width;
+	bool show;
 
+}life;
 struct buttonCordinate{
 
 	int x;
@@ -34,6 +40,8 @@ char tanjirowaterbreathing1[10][25] = { "water1\\wb1.png", "water1\\wb2.png", "w
 char tanjirowaterbreathing1f[25] = "water1\\wb10.png";
 int tanjiroCordinateX = 450;
 int tanjiroCordinateY = 100;
+int health = 250;
+int score = 0;
 int waterattack1=450;
 int tanjiroIndex = 0;
 int rtanjiroIndex = 0;
@@ -44,7 +52,11 @@ bool running = false;
 bool frunning = false;
 bool brunning = false;
 int standcount = 0;
+int rstandcount = 0;
 int dx=10;
+int healthbarImage;
+
+
 
 void iDraw()
 {
@@ -63,8 +75,9 @@ void iDraw()
 				iShowImage(bCordinate[i].x, bCordinate[i].y, 309, 112, img2);
 			}
 	}
+
 	else if (gameState == 0)
-	{
+	{	
 		int img3 = iLoadImage(play);
 		iShowImage(0, 0, 1920, 1080, img3);
 		//tanjiro stand and run
@@ -81,20 +94,28 @@ void iDraw()
 					tanjiroIndex = 0;
 					standPosition = true;
 				}
+				
 
 			}
 			if (brunning)
 			{
 				int rtandour = iLoadImage(rtanjiro[rtanjiroIndex]);
 				iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, rtandour);
-				standcount++;
-				if (standcount >= 20)
+				rstandcount++;
+				if (rstandcount >= 20)
 				{
-					standcount = 0;
-					tanjiroIndex = 0;
+					rstandcount = 0;
+					rtanjiroIndex = 0;
 					standPosition = true;
 				}
 
+			}
+			else if (standPosition)
+			{
+				frunning = false;
+				brunning = false;
+				int tanstand = iLoadImage(tanjirostand);
+				iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tanstand);
 			}
 			
 			
@@ -107,8 +128,6 @@ void iDraw()
 
 		else if (fight1)
 		{
-			if (waterattack1 < 1470 && tanjiroCordinateX > 450)
-			{
 				int waterbreathing1 = iLoadImage(tanjirowaterbreathing1[tanjirowb1Index]);
 				iShowImage(waterattack1, tanjiroCordinateY, 250, 216, waterbreathing1);
 				if (waterattack1 == 1300)
@@ -119,9 +138,9 @@ void iDraw()
 				if (tanjirowb1Index == 9)
 				{
 					iPauseTimer(autoindex);
-					tanjirowb1Index = 0;
+					tanjirowb1Index = 9;
 				}
-			}
+			
 
 		}
 		else
@@ -208,7 +227,7 @@ void iKeyboard(unsigned char key)
 		
 		if (waterattack1<1400 || waterattack1>=450)
 		{
-			waterattack1 += 100;
+			waterattack1 += 50;
 			tanjirowb1Index++;
 
 			if (tanjirowb1Index >= 10)
@@ -261,11 +280,11 @@ void iSpecialKeyboard(unsigned char key)
 	{
 		tanjiroCordinateX -= 45;
 
-		rtanjiroIndex--;
+		rtanjiroIndex++;
 		
-		if (rtanjiroIndex <0)
+		if (rtanjiroIndex >=6)
 		{
-			rtanjiroIndex = 5;
+			rtanjiroIndex = 0;
 		}
 		running = true;
 		frunning = false;
@@ -291,7 +310,7 @@ void change()
 	waterattack1 += dx;
 	if (waterattack1 >= screenWidth || waterattack1 <= 0)
 		{
-			dx *= (-1);
+			dx *= (-10);
 		}
 	
 
@@ -300,11 +319,13 @@ void automation()
 {
 	tanjirowb1Index++;
 }
+
 int main(void)
 {	
 	int sum = 100;
 	///srand((unsigned)time(NULL));
 	iInitialize(screenWidth, screenHeight, "Demon Slayer: Kimetsu No Yaiba");
+	
 
 	///updated see the documentations
 	
@@ -318,8 +339,8 @@ int main(void)
 		bCordinate[i].y = sum;
 		sum += 150;
 	}
-	attack = iSetTimer(100, change);
-	autoindex = iSetTimer(100, automation);
+	//attack = iSetTimer(100, change);
+	//autoindex = iSetTimer(200, automation);
 
 	iStart();
 	return 0;
