@@ -1,4 +1,3 @@
-
 #include<iostream>
 using namespace std;
 #include "iGraphics.h"
@@ -36,7 +35,7 @@ int gameState = -1;
 char tanjiro[6][25] = { "Tanjiro\\dour1.png", "Tanjiro\\dour2.png", "Tanjiro\\dour3.png", "Tanjiro\\dour4.png", "Tanjiro\\dour5.png", "Tanjiro\\dour6.png" };
 char rtanjiro[6][25] = { "Tanjiro\\r.dour1.png", "Tanjiro\\r.dour2.png", "Tanjiro\\r.dour3.png", "Tanjiro\\r.dour4.png", "Tanjiro\\r.dour5.png", "Tanjiro\\r.dour6.png" };
 char tanjirostand[25] = "Tanjiro\\kharayase.png";
-char tanjirowaterbreathing1[10][25] = { "water1\\wb1.png", "water1\\wb2.png", "water1\\wb3.png", "water1\\wb4.png", "water1\\wb5.png", "water1\\wb6.png", "water1\\wb7.png", "water1\\wb8.png", "water1\\wb9.png", "water1\\wb10.png" };
+char tanjirowaterbreathing1[3][25] = { "water1\\wb1.png", "water1\\wb2.png", "water1\\wb3.png"};
 char tanjirowaterbreathing1f[25] = "water1\\wb10.png";
 int tanjiroCordinateX = 450;
 int tanjiroCordinateY = 100;
@@ -55,7 +54,7 @@ int standcount = 0;
 int rstandcount = 0;
 int dx=10;
 int healthbarImage;
-
+char healthbar[25] = "Background\\Healthbar.png";
 
 
 void iDraw()
@@ -80,6 +79,21 @@ void iDraw()
 	{	
 		int img3 = iLoadImage(play);
 		iShowImage(0, 0, 1920, 1080, img3);
+		//healthbar
+		healthbarImage = iLoadImage(healthbar);
+		iShowImage(50, 900, 600, 150, healthbarImage);
+
+		iSetColor(160, 160, 160);
+		iFilledRectangle(200, 950, 225, 34);
+		if (health > 180)
+			iSetColor(0, 204, 0);
+		else if (health > 60)
+			iSetColor(220, 220, 0);
+		else
+			iSetColor(204, 0, 0);
+
+		iFilledRectangle(200, 950, health, 34);
+
 		//tanjiro stand and run
 		if (running)
 		{	
@@ -135,10 +149,10 @@ void iDraw()
 					iPauseTimer(attack);
 					waterattack1 = 450;
 				}
-				if (tanjirowb1Index == 9)
+				if (tanjirowb1Index == 2)
 				{
 					iPauseTimer(autoindex);
-					tanjirowb1Index = 9;
+					tanjirowb1Index = 2;
 				}
 			
 
@@ -224,23 +238,15 @@ void iKeyboard(unsigned char key)
 
 	if (key == '\e')
 	{
-		
-		if (waterattack1<1400 || waterattack1>=450)
-		{
-			waterattack1 += 50;
 			tanjirowb1Index++;
 
-			if (tanjirowb1Index >= 10)
+			if (tanjirowb1Index >= 3)
 			{
 				tanjirowb1Index = 0;
 			}
-			
 			running = false;
 			fight1 = true;
-			standPosition = false;
-
-		}
-		
+			standPosition = false;		
 	}
 	
 	
@@ -310,7 +316,7 @@ void change()
 	waterattack1 += dx;
 	if (waterattack1 >= screenWidth || waterattack1 <= 0)
 		{
-			dx *= (-10);
+			dx *= (-1);
 		}
 	
 
