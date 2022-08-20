@@ -20,7 +20,7 @@ struct buttonCordinate{
 }bCordinate[6];
 
 //int mposx, mposy;
-char homemenu[20] = "Background\\menu.png"; 
+char homemenu[20] = "Background\\menu.png";
 char button[6][25] = { "Buttons\\play.png", "Buttons\\store.png", "Buttons\\options.png", "Buttons\\help.png", "Buttons\\credit.png", "Buttons\\exit.png" };
 //individual page
 char play[20] = "Background\\bg3.png";
@@ -29,21 +29,21 @@ char store[25] = "Background\\store.png";
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 bool musicon = true;
-int attack,autoindex;
+int attack, autoindex;
 int gameState = -1;
 
 //tanjiro
 char tanjiro[6][25] = { "Tanjiro\\dour1.png", "Tanjiro\\dour2.png", "Tanjiro\\dour3.png", "Tanjiro\\dour4.png", "Tanjiro\\dour5.png", "Tanjiro\\dour6.png" };
 char rtanjiro[6][25] = { "Tanjiro\\r.dour1.png", "Tanjiro\\r.dour2.png", "Tanjiro\\r.dour3.png", "Tanjiro\\r.dour4.png", "Tanjiro\\r.dour5.png", "Tanjiro\\r.dour6.png" };
 char tanjirostand[25] = "Tanjiro\\kharayase.png";
-char tanjirowaterbreathing1[10][25] = { "water1\\wb1.png", "water1\\wb2.png", "water1\\wb3.png", "water1\\wb4.png", "water1\\wb5.png", "water1\\wb6.png", "water1\\wb7.png", "water1\\wb8.png", "water1\\wb9.png","water1\\wb10.png" };
-char tanjirobasicattack[10][25] = { "battack\\ba0.png", "battack\\ba0.png", "battack\\ba1.png", "battack\\ba2.png", "battack\\ba3.png", "battack\\ba4.png", "battack\\ba5.png", "battack\\ba6.png", "battack\\ba7.png", "battack\\ba8.png" };
+char tanjirowaterbreathing1[10][25] = { "water1\\wb1.png", "water1\\wb2.png", "water1\\wb3.png", "water1\\wb4.png", "water1\\wb5.png", "water1\\wb6.png", "water1\\wb7.png", "water1\\wb8.png", "water1\\wb9.png", "water1\\wb10.png" };
+char tanjirobasicattack[11][25] = { "battack\\ba0.png", "battack\\ba0.png", "battack\\ba1.png", "battack\\ba2.png", "battack\\ba3.png", "battack\\ba4.png", "battack\\ba5.png", "battack\\ba6.png", "battack\\ba7.png", "battack\\ba8.png", "battack\\ba9.png" };
 int tanjiroCordinateX = 450;
 int tanjiroCordinateY = 100;
 int tanjiroIndex = 0;
 int rtanjiroIndex = 0;
 int tanjirowb1Index = 0;
-int tanjirobaIndex =0;
+int tanjirobaIndex = 0;
 
 //stance
 bool standPosition = true;
@@ -55,7 +55,7 @@ bool brunning = false;
 int standcount = 0;
 int rstandcount = 0;
 
-int dx=10;
+int dx = 10;
 //health
 int health = 250;
 int healthbarImage;
@@ -64,6 +64,72 @@ char healthbar[25] = "Background\\Healthbar.png";
 //score
 int score = 0;
 int countTimer;
+void playermovement()
+{	//tanjiro stand and run
+	if (running)
+	{
+		if (frunning)
+		{
+			int tandour = iLoadImage(tanjiro[tanjiroIndex]);
+			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tandour);
+			standcount++;
+			if (standcount >= 20)
+			{
+				standcount = 0;
+				tanjiroIndex = 0;
+				standPosition = true;
+			}
+
+
+		}
+		if (brunning)
+		{
+			int rtandour = iLoadImage(rtanjiro[rtanjiroIndex]);
+			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, rtandour);
+			rstandcount++;
+			if (rstandcount >= 20)
+			{
+				rstandcount = 0;
+				rtanjiroIndex = 0;
+				standPosition = true;
+			}
+
+		}
+		else if (standPosition)
+		{
+			frunning = false;
+			brunning = false;
+			int tanstand = iLoadImage(tanjirostand);
+			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tanstand);
+		}
+
+	}
+
+	//waterbreathing1 ATTACK 1
+
+	else if (fight1)
+	{
+		int waterbreathing1 = iLoadImage(tanjirowaterbreathing1[tanjirowb1Index]);
+		iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, waterbreathing1);
+
+
+
+	}
+	// basic attacck!
+	else if (fight2)
+	{
+		int sword = iLoadImage(tanjirobasicattack[tanjirobaIndex]);
+		iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, sword);
+	}
+
+
+	else if (standPosition)
+	{
+		int tanstand = iLoadImage(tanjirostand);
+		iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tanstand);
+	}
+
+}
 
 void iDraw()
 {
@@ -77,19 +143,20 @@ void iDraw()
 		iShowImage(0, 0, 1920, 1080, img);
 
 		for (int i = 0; i < 6; i++)
-			{
-				int img2 = iLoadImage(button[i]);
-				iShowImage(bCordinate[i].x, bCordinate[i].y, 309, 112, img2);
-			}
+		{
+			int img2 = iLoadImage(button[i]);
+			iShowImage(bCordinate[i].x, bCordinate[i].y, 309, 112, img2);
+		}
 	}
 
 	else if (gameState == 0)
-	{	
+	{
 		int img3 = iLoadImage(play);
 		iShowImage(0, 0, 1920, 1080, img3);
+		
 		//healthbar
 		healthbarImage = iLoadImage(healthbar);
-		iShowImage(50, 900, 300, 75, healthbarImage);
+		iShowImage(50, 900, 400, 100, healthbarImage);
 
 		iSetColor(160, 160, 160);
 		iFilledRectangle(200, 950, 225, 34);
@@ -99,82 +166,10 @@ void iDraw()
 			iSetColor(220, 220, 0);
 		else
 			iSetColor(204, 0, 0);
-
+		
 		iFilledRectangle(200, 950, health, 34);
 
-		//tanjiro stand and run
-		if (running)
-		{	
-			if (frunning)
-			{
-				int tandour = iLoadImage(tanjiro[tanjiroIndex]);
-				iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tandour);
-				standcount++;
-				if (standcount >= 20)
-				{
-					standcount = 0;
-					tanjiroIndex = 0;
-					standPosition = true;
-				}
-				
-
-			}
-			if (brunning)
-			{
-				int rtandour = iLoadImage(rtanjiro[rtanjiroIndex]);
-				iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, rtandour);
-				rstandcount++;
-				if (rstandcount >= 20)
-				{
-					rstandcount = 0;
-					rtanjiroIndex = 0;
-					standPosition = true;
-				}
-
-			}
-			else if (standPosition)
-			{
-				frunning = false;
-				brunning = false;
-				int tanstand = iLoadImage(tanjirostand);
-				iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tanstand);
-			}
-			
-			
-
-			
-
-		}
-		
-		//waterbreathing1 ATTACK 1
-
-		else if (fight1)
-		{
-				int waterbreathing1 = iLoadImage(tanjirowaterbreathing1[tanjirowb1Index]);
-				iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, waterbreathing1);
-				
-			
-
-		}
-		// basic attacck!
-		else if (fight2)
-		{
-			int sword = iLoadImage(tanjirobasicattack[tanjirobaIndex]);
-			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, sword);
-		}
-
-		
-		else if (standPosition)
-		{
-			int tanstand = iLoadImage(tanjirostand);
-			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tanstand);
-		}
-	
-
-		
-		
-		
-		
+		playermovement();
 		
 	}
 	//Store
@@ -187,9 +182,9 @@ void iDraw()
 	{
 		exit(0);
 	}
-		
-	
-	
+
+
+
 	return;
 }
 
@@ -202,17 +197,17 @@ void iDraw()
 
 void iMouseMove(int mx, int my)
 {
-	
+
 }
 //*******************************************************************ipassiveMouse***********************************************************************//
 void iPassiveMouseMove(int mx, int my)
 {
-	
+
 }
 
 void iMouse(int button, int state, int mx, int my)
 {
-	
+
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
 		for (int i = 0; i < 6; i++)
@@ -224,13 +219,13 @@ void iMouse(int button, int state, int mx, int my)
 
 			}
 		}
-		
+
 	}
-	
-	
+
+
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
 	{
-		
+
 	}
 }
 
@@ -245,29 +240,50 @@ void iKeyboard(unsigned char key)
 
 	if (key == '\q')
 	{
-			tanjirowb1Index++;
-			tanjiroCordinateX += 90;
-			if (tanjirowb1Index >= 10)
-			{
-				tanjirowb1Index = 0;
-			}
-			if (tanjiroCordinateX >= 1300)
-			{
-				tanjiroCordinateX = 450;
-			}
+		/*tanjirowb1Index++;
+		tanjiroCordinateX += 90;
+		if (tanjirowb1Index >= 10)
+		{
+		tanjirowb1Index = 0;
+		}
+		if (tanjiroCordinateX >= 1300)
+		{
+		tanjiroCordinateX = 450;
+		}
+		running = false;
+		fight1 = true;
+		standPosition = false; */
+
+		iResumeTimer(countTimer);
+		tanjirowb1Index = 0;
+		//tanjiroCordinateX = 450;
+
+		if (tanjirowb1Index >= 9 && tanjiroCordinateX < 1300)
+		{
+			fight1 = false;
+			standPosition = true;
+			iPauseTimer(countTimer);
+			tanjirowb1Index = 0;
+
+
+		}
+
+		if (tanjirowb1Index <= 9 && tanjiroCordinateX < 1300){
+
 			running = false;
 			fight1 = true;
-			standPosition = false;		
+			standPosition = false;
+		}
 	}
-	
+
 	if (key == '\e')
 	{
 		/*for (int i = 0; i < 9; i++)
 		{
-			tanjirobaIndex++;
-			tanjiroCordinateX += 100;
-			if (tanjirobaIndex == 8)
-				break;
+		tanjirobaIndex++;
+		tanjiroCordinateX += 100;
+		if (tanjirobaIndex == 8)
+		break;
 		}
 		*/
 
@@ -275,22 +291,24 @@ void iKeyboard(unsigned char key)
 		tanjirobaIndex = 0;
 		if (tanjirobaIndex >= 10)
 		{
-			tanjirobaIndex = 0;
-			iPauseTimer(countTimer);
+			fight2 = false;
 			standPosition = true;
+			iPauseTimer(countTimer);
+			tanjirobaIndex = 0;
+
+
 		}
 
-		
-		if (tanjiroCordinateX >= 1300)
-		{
-			tanjiroCordinateX = 450;
+		if (tanjirobaIndex <= 10){
+
+			running = false;
+			fight2 = true;
+			standPosition = false;
 		}
-		running = false;
-		fight2 = true;
-		standPosition = false;
+
 	}
-	
-	
+
+
 }
 
 /*
@@ -305,7 +323,7 @@ GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END, GLUT_KEY_INSERT
 void iSpecialKeyboard(unsigned char key)
 {
 
-	
+
 	if (key == GLUT_KEY_RIGHT || tanjiroCordinateX <350)
 	{
 		tanjiroCordinateX += 45;
@@ -320,15 +338,15 @@ void iSpecialKeyboard(unsigned char key)
 		frunning = true;
 		fight1 = false;
 		standPosition = false;
-		
+
 	}
 	if (key == GLUT_KEY_LEFT || tanjiroCordinateX >1400)
 	{
 		tanjiroCordinateX -= 45;
 
 		rtanjiroIndex++;
-		
-		if (rtanjiroIndex >=6)
+
+		if (rtanjiroIndex >= 6)
 		{
 			rtanjiroIndex = 0;
 		}
@@ -338,7 +356,7 @@ void iSpecialKeyboard(unsigned char key)
 		fight1 = false;
 		standPosition = false;
 	}
-	
+
 	if (key == GLUT_KEY_HOME)
 	{
 		gameState = -1;
@@ -347,26 +365,38 @@ void iSpecialKeyboard(unsigned char key)
 	{
 		exit(0);
 	}
-	
+
 }
 void changeindex()
-{	
-	if (tanjirobaIndex >= 0 && tanjirobaIndex <= 10)
+{
+	if (tanjirobaIndex >= 0 && tanjirobaIndex <= 9)
 	{
 		tanjirobaIndex++;
 	}
-	
+	if ((tanjirowb1Index >= 0 && tanjirowb1Index <= 8) && (tanjiroCordinateX >= 450 && tanjiroCordinateX <= 1350))
+	{
+		tanjirowb1Index++;
+		tanjiroCordinateX += 90;
+
+	}
+	/*if (tanjirowb1Index >= 0 && tanjirowb1Index <= 8 && (tanjiroCordinateX >= 600 && tanjiroCordinateX <= 1650))
+	{
+		tanjirowb1Index++;
+		//tanjiroCordinateX += 90;
+
+	}*/
+
 }
 
 int main(void)
-{	
+{
 	int sum = 100;
 	///srand((unsigned)time(NULL));
 	iInitialize(screenWidth, screenHeight, "Demon Slayer: Kimetsu No Yaiba");
-	
+
 
 	///updated see the documentations
-	
+
 	if (musicon == true){
 		PlaySound("Music\\menusfx.wav", NULL, SND_LOOP | SND_ASYNC);
 	}
@@ -377,10 +407,10 @@ int main(void)
 		bCordinate[i].y = sum;
 		sum += 150;
 	}
-	
-	countTimer=iSetTimer(150,changeindex);
-	
+
+	countTimer = iSetTimer(150, changeindex);
+	iPauseTimer(countTimer);
+
 	iStart();
 	return 0;
 }
-
