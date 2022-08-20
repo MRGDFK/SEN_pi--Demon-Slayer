@@ -2,6 +2,7 @@
 using namespace std;
 #include "iGraphics.h"
 
+
 #define screenWidth 1920
 #define screenHeight 1080
 
@@ -35,27 +36,34 @@ int gameState = -1;
 char tanjiro[6][25] = { "Tanjiro\\dour1.png", "Tanjiro\\dour2.png", "Tanjiro\\dour3.png", "Tanjiro\\dour4.png", "Tanjiro\\dour5.png", "Tanjiro\\dour6.png" };
 char rtanjiro[6][25] = { "Tanjiro\\r.dour1.png", "Tanjiro\\r.dour2.png", "Tanjiro\\r.dour3.png", "Tanjiro\\r.dour4.png", "Tanjiro\\r.dour5.png", "Tanjiro\\r.dour6.png" };
 char tanjirostand[25] = "Tanjiro\\kharayase.png";
-char tanjirowaterbreathing1[3][25] = { "water1\\wb1.png", "water1\\wb2.png", "water1\\wb3.png"};
-char tanjirowaterbreathing1f[25] = "water1\\wb10.png";
+char tanjirowaterbreathing1[10][25] = { "water1\\wb1.png", "water1\\wb2.png", "water1\\wb3.png", "water1\\wb4.png", "water1\\wb5.png", "water1\\wb6.png", "water1\\wb7.png", "water1\\wb8.png", "water1\\wb9.png","water1\\wb10.png" };
+char tanjirobasicattack[10][25] = { "battack\\ba0.png", "battack\\ba0.png", "battack\\ba1.png", "battack\\ba2.png", "battack\\ba3.png", "battack\\ba4.png", "battack\\ba5.png", "battack\\ba6.png", "battack\\ba7.png", "battack\\ba8.png" };
 int tanjiroCordinateX = 450;
 int tanjiroCordinateY = 100;
-int health = 250;
-int score = 0;
-int waterattack1=450;
 int tanjiroIndex = 0;
 int rtanjiroIndex = 0;
 int tanjirowb1Index = 0;
+int tanjirobaIndex =0;
+
+//stance
 bool standPosition = true;
 bool fight1 = false;
+bool fight2 = false;
 bool running = false;
 bool frunning = false;
 bool brunning = false;
 int standcount = 0;
 int rstandcount = 0;
+
 int dx=10;
+//health
+int health = 250;
 int healthbarImage;
 char healthbar[25] = "Background\\Healthbar.png";
 
+//score
+int score = 0;
+int countTimer;
 
 void iDraw()
 {
@@ -81,7 +89,7 @@ void iDraw()
 		iShowImage(0, 0, 1920, 1080, img3);
 		//healthbar
 		healthbarImage = iLoadImage(healthbar);
-		iShowImage(50, 900, 600, 150, healthbarImage);
+		iShowImage(50, 900, 300, 75, healthbarImage);
 
 		iSetColor(160, 160, 160);
 		iFilledRectangle(200, 950, 225, 34);
@@ -143,21 +151,20 @@ void iDraw()
 		else if (fight1)
 		{
 				int waterbreathing1 = iLoadImage(tanjirowaterbreathing1[tanjirowb1Index]);
-				iShowImage(waterattack1, tanjiroCordinateY, 250, 216, waterbreathing1);
-				if (waterattack1 == 1300)
-				{
-					iPauseTimer(attack);
-					waterattack1 = 450;
-				}
-				if (tanjirowb1Index == 2)
-				{
-					iPauseTimer(autoindex);
-					tanjirowb1Index = 2;
-				}
+				iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, waterbreathing1);
+				
 			
 
 		}
-		else
+		// basic attacck!
+		else if (fight2)
+		{
+			int sword = iLoadImage(tanjirobasicattack[tanjirobaIndex]);
+			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, sword);
+		}
+
+		
+		else if (standPosition)
 		{
 			int tanstand = iLoadImage(tanjirostand);
 			iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tanstand);
@@ -176,9 +183,9 @@ void iDraw()
 		int img4 = iLoadImage(store);
 		iShowImage(0, 0, 1920, 1080, img4);
 	}
-	else
+	else if (gameState == 5)
 	{
-
+		exit(0);
 	}
 		
 	
@@ -236,19 +243,52 @@ key- holds the ASCII value of the key pressed.
 void iKeyboard(unsigned char key)
 {
 
-	if (key == '\e')
+	if (key == '\q')
 	{
 			tanjirowb1Index++;
-
-			if (tanjirowb1Index >= 3)
+			tanjiroCordinateX += 90;
+			if (tanjirowb1Index >= 10)
 			{
 				tanjirowb1Index = 0;
+			}
+			if (tanjiroCordinateX >= 1300)
+			{
+				tanjiroCordinateX = 450;
 			}
 			running = false;
 			fight1 = true;
 			standPosition = false;		
 	}
 	
+	if (key == '\e')
+	{
+		/*for (int i = 0; i < 9; i++)
+		{
+			tanjirobaIndex++;
+			tanjiroCordinateX += 100;
+			if (tanjirobaIndex == 8)
+				break;
+		}
+		*/
+
+		iResumeTimer(countTimer);
+		tanjirobaIndex = 0;
+		if (tanjirobaIndex >= 10)
+		{
+			tanjirobaIndex = 0;
+			iPauseTimer(countTimer);
+			standPosition = true;
+		}
+
+		
+		if (tanjiroCordinateX >= 1300)
+		{
+			tanjiroCordinateX = 450;
+		}
+		running = false;
+		fight2 = true;
+		standPosition = false;
+	}
 	
 	
 }
@@ -309,21 +349,13 @@ void iSpecialKeyboard(unsigned char key)
 	}
 	
 }
-
-void change()
-{
+void changeindex()
+{	
+	if (tanjirobaIndex >= 0 && tanjirobaIndex <= 10)
+	{
+		tanjirobaIndex++;
+	}
 	
-	waterattack1 += dx;
-	if (waterattack1 >= screenWidth || waterattack1 <= 0)
-		{
-			dx *= (-1);
-		}
-	
-
-}
-void automation()
-{
-	tanjirowb1Index++;
 }
 
 int main(void)
@@ -345,9 +377,9 @@ int main(void)
 		bCordinate[i].y = sum;
 		sum += 150;
 	}
-	//attack = iSetTimer(100, change);
-	//autoindex = iSetTimer(200, automation);
-
+	
+	countTimer=iSetTimer(150,changeindex);
+	
 	iStart();
 	return 0;
 }
