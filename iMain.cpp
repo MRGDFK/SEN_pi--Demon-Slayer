@@ -5,6 +5,7 @@ using namespace std;
 
 #define screenWidth 1920
 #define screenHeight 1080
+#define SPEED 3
 
 struct Life
 {
@@ -41,10 +42,24 @@ char tanjirobasicattack[11][25] = { "battack\\ba0.png", "battack\\ba0.png", "bat
 int tanjiroCordinateX = 450;
 int tanjiroCordinateY = 100;
 int tanjiroIndex = 0;
-int rtanjiroIndex = 0;
+int rtanjiroIndex = 0; 
 int tanjirowb1Index = 0;
 int tanjirobaIndex = 0;
-
+//muzan
+char muzan[9][25] = { "Muzan douraitase\\MD1.png", "Muzan douraitase\\MD2.png", "Muzan douraitase\\MD3.png", "Muzan douraitase\\MD4.png", "Muzan douraitase\\MD5.png", "Muzan douraitase\\MD6.png", "Muzan douraitase\\MD7.png", "Muzan douraitase\\MD8.png", "Muzan douraitase\\MD9.png" };
+char muzanstand[25] = "Muzan kharay ase\\MK0.png";
+char muzanatk[17][50] = { "Muzan hat martase\\msa1.png", "Muzan hat martase\\msa2.png", "Muzan hat martase\\msa3.png", "Muzan hat martase\\msa4.png", "Muzan hat martase\\msa5.png", "Muzan hat martase\\msa6.png", "Muzan hat martase\\msa7.png", "Muzan hat martase\\msa8.png", "Muzan hat martase\\msa9.png", "Muzan hat martase\\msa10.png", "Muzan hat martase\\msa11.png", "Muzan hat martase\\msa12.png", "Muzan hat martase\\msa13.png", "Muzan hat martase\\msa14.png", "Muzan hat martase\\msa15.png", "Muzan hat martase\\msa16.png", "Muzan hat martase\\msa17.png" };
+//struct Muzan
+//{
+	int muzanCordinateX = 1350;
+	int muzanCordinateY = 100;
+	int muzanIndex = 0;
+	int muzanatkIndex = 0;
+	int muzanAnimationtimer;
+//}boss;
+bool muzand = false;
+bool muzans = true;
+bool muzanatk1 = true;
 //stance
 bool standPosition = true;
 bool fight1 = false;
@@ -55,15 +70,66 @@ bool brunning = false;
 int standcount = 0;
 int rstandcount = 0;
 
-int dx = 10;
+
 //health
-int health = 250;
+int health = 225;
 int healthbarImage;
 char healthbar[25] = "Background\\Healthbar.png";
 
 //score
 int score = 0;
 int countTimer;
+
+//healthbar
+void Healthbar()
+{
+	
+	healthbarImage = iLoadImage(healthbar);
+	iShowImage(50, 900, 400, 100, healthbarImage);
+
+	iSetColor(160, 160, 160);
+	iFilledRectangle(200, 950, 225, 34);
+	if (health > 180)
+		iSetColor(0, 204, 0);
+	else if (health > 60)
+		iSetColor(220, 220, 0);
+	else
+		iSetColor(204, 0, 0);
+
+	iFilledRectangle(200, 950, health, 34);
+}
+void muzankibutsuji()
+{
+	if (muzand)
+	{
+		int muzandour = iLoadImage(muzan[muzanIndex]);
+		iShowImage(muzanCordinateX, muzanCordinateY, 250, 216, muzandour);
+	}
+	if (muzanatk1)
+	{
+		int muzanattack1 = iLoadImage(muzanatk[muzanatkIndex]);
+		iShowImage(muzanCordinateX, muzanCordinateY, 350, 316, muzanattack1);
+	}
+	else
+	{
+		int muzanstanding = iLoadImage(muzanstand);
+		iShowImage(muzanCordinateX, muzanCordinateY, 350, 316, muzanstanding);
+	}
+}
+void muzananimation()
+{
+	if (muzanatk1)
+	{
+		if (muzanatkIndex < 15)
+		{
+			muzanatkIndex++;
+		}
+		else
+		{
+			muzanatkIndex = 0;
+		}
+	}
+}
 void playermovement()
 {	//tanjiro stand and run
 	if (running)
@@ -79,7 +145,6 @@ void playermovement()
 				tanjiroIndex = 0;
 				standPosition = true;
 			}
-
 
 		}
 		if (brunning)
@@ -111,9 +176,6 @@ void playermovement()
 	{
 		int waterbreathing1 = iLoadImage(tanjirowaterbreathing1[tanjirowb1Index]);
 		iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, waterbreathing1);
-
-
-
 	}
 	// basic attacck!
 	else if (fight2)
@@ -129,6 +191,18 @@ void playermovement()
 		iShowImage(tanjiroCordinateX, tanjiroCordinateY, 250, 216, tanstand);
 	}
 
+}
+
+void CollisionCheck()
+{
+	if (muzanatk1)
+	{
+		if (tanjiroCordinateX+250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX+350)
+		{
+			health -= 45;
+			
+		}
+	}
 }
 
 void iDraw()
@@ -148,28 +222,14 @@ void iDraw()
 			iShowImage(bCordinate[i].x, bCordinate[i].y, 309, 112, img2);
 		}
 	}
-
+	//PLAY WINDOW
 	else if (gameState == 0)
 	{
 		int img3 = iLoadImage(play);
 		iShowImage(0, 0, 1920, 1080, img3);
-		
-		//healthbar
-		healthbarImage = iLoadImage(healthbar);
-		iShowImage(50, 900, 400, 100, healthbarImage);
-
-		iSetColor(160, 160, 160);
-		iFilledRectangle(200, 950, 225, 34);
-		if (health > 180)
-			iSetColor(0, 204, 0);
-		else if (health > 60)
-			iSetColor(220, 220, 0);
-		else
-			iSetColor(204, 0, 0);
-		
-		iFilledRectangle(200, 950, health, 34);
-
+		Healthbar();
 		playermovement();
+		muzankibutsuji();
 		
 	}
 	//Store
@@ -274,6 +334,7 @@ void iKeyboard(unsigned char key)
 			fight1 = true;
 			standPosition = false;
 		}
+		CollisionCheck();
 	}
 
 	if (key == '\e')
@@ -289,6 +350,7 @@ void iKeyboard(unsigned char key)
 
 		iResumeTimer(countTimer);
 		tanjirobaIndex = 0;
+		CollisionCheck();
 		if (tanjirobaIndex >= 10)
 		{
 			fight2 = false;
@@ -410,7 +472,7 @@ int main(void)
 
 	countTimer = iSetTimer(150, changeindex);
 	iPauseTimer(countTimer);
-
+	muzanAnimationtimer = iSetTimer(150, muzananimation);
 	iStart();
 	return 0;
 }
