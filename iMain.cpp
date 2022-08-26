@@ -7,13 +7,6 @@ using namespace std;
 #define screenHeight 1080
 #define SPEED 3
 
-struct Life
-{
-	int x, y;
-	int height, width;
-	bool show;
-
-}life;
 struct buttonCordinate{
 
 	int x;
@@ -50,16 +43,16 @@ char muzan[9][25] = { "Muzan douraitase\\MD1.png", "Muzan douraitase\\MD2.png", 
 char muzanstand[25] = "Muzan kharay ase\\MK0.png";
 char muzanatk[17][50] = { "Muzan hat martase\\msa1.png", "Muzan hat martase\\msa2.png", "Muzan hat martase\\msa3.png", "Muzan hat martase\\msa4.png", "Muzan hat martase\\msa5.png", "Muzan hat martase\\msa6.png", "Muzan hat martase\\msa7.png", "Muzan hat martase\\msa8.png", "Muzan hat martase\\msa9.png", "Muzan hat martase\\msa10.png", "Muzan hat martase\\msa11.png", "Muzan hat martase\\msa12.png", "Muzan hat martase\\msa13.png", "Muzan hat martase\\msa14.png", "Muzan hat martase\\msa15.png", "Muzan hat martase\\msa16.png", "Muzan hat martase\\msa17.png" };
 //struct Muzan
-//{
-	int muzanCordinateX = 1350;
-	int muzanCordinateY = 100;
-	int muzanIndex = 0;
-	int muzanatkIndex = 0;
-	int muzanAnimationtimer;
-//}boss;
+int muzanCordinateX = 1350;
+int muzanCordinateY = 100;
+int muzanIndex = 0;
+int muzanatkIndex = 0;
+int muzanAnimationtimer;
+
 bool muzand = false;
-bool muzans = true;
-bool muzanatk1 = true;
+bool muzans = false;
+bool muzanatk2 = true;
+bool muzanatk1 = false;
 //stance
 bool standPosition = true;
 bool fight1 = false;
@@ -72,9 +65,12 @@ int rstandcount = 0;
 
 
 //health
-int health = 225;
+int health = 292;
+int muzanhealth = 292;
 int healthbarImage;
+int muzanhealthbarImage;
 char healthbar[25] = "Background\\Healthbar.png";
+char muzanhealthBar[30] = "Background\\muzanhealthbar.png";
 
 //score
 int score = 0;
@@ -88,7 +84,7 @@ void Healthbar()
 	iShowImage(50, 900, 400, 100, healthbarImage);
 
 	iSetColor(160, 160, 160);
-	iFilledRectangle(200, 950, 225, 34);
+	iFilledRectangle(150, 925, 292, 37);
 	if (health > 180)
 		iSetColor(0, 204, 0);
 	else if (health > 60)
@@ -96,7 +92,27 @@ void Healthbar()
 	else
 		iSetColor(204, 0, 0);
 
-	iFilledRectangle(200, 950, health, 34);
+	iFilledRectangle(150, 925, health, 37);
+}
+void muzanHealthBar()
+{
+	muzanhealthbarImage = iLoadImage(muzanhealthBar);
+	iShowImage(1400, 900, 400, 100, muzanhealthbarImage);
+
+	iSetColor(160, 160, 160);
+	iFilledRectangle(1408, 930, 292, 34);
+	if (muzanhealth > 180)
+		iSetColor(0, 204, 0);
+	else if (muzanhealth > 60)
+		iSetColor(220, 220, 0);
+	else
+		iSetColor(204, 0, 0);
+
+	iFilledRectangle(1408, 930, muzanhealth, 34);
+	if (muzanhealth < 1)
+	{
+		exit(0);
+	}
 }
 void muzankibutsuji()
 {
@@ -105,7 +121,7 @@ void muzankibutsuji()
 		int muzandour = iLoadImage(muzan[muzanIndex]);
 		iShowImage(muzanCordinateX, muzanCordinateY, 250, 216, muzandour);
 	}
-	if (muzanatk1)
+	if (muzanatk2)
 	{
 		int muzanattack1 = iLoadImage(muzanatk[muzanatkIndex]);
 		iShowImage(muzanCordinateX, muzanCordinateY, 350, 316, muzanattack1);
@@ -117,18 +133,36 @@ void muzankibutsuji()
 	}
 }
 void muzananimation()
-{
-	if (muzanatk1)
+{	
+	/*if (muzand)
 	{
+		if (muzanIndex < 7)
+		{
+			muzanIndex++;
+		}
+		else
+		{
+			muzanIndex = 0;
+		}
+	}*/
+	if (muzanatk2)
+	{
+		muzanCordinateX -= 30;
 		if (muzanatkIndex < 15)
 		{
 			muzanatkIndex++;
+			
+			if (muzanCordinateX <= 450)
+			{
+				muzanCordinateX = 1350;
+			}
 		}
 		else
 		{
 			muzanatkIndex = 0;
 		}
 	}
+
 }
 void playermovement()
 {	//tanjiro stand and run
@@ -195,11 +229,11 @@ void playermovement()
 
 void CollisionCheck()
 {
-	if (muzanatk1)
+	if (muzanatk2)
 	{
 		if (tanjiroCordinateX+250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX+350)
 		{
-			health -= 45;
+			muzanhealth -= 45;
 			
 		}
 	}
@@ -228,6 +262,7 @@ void iDraw()
 		int img3 = iLoadImage(play);
 		iShowImage(0, 0, 1920, 1080, img3);
 		Healthbar();
+		muzanHealthBar();
 		playermovement();
 		muzankibutsuji();
 		
@@ -267,7 +302,7 @@ void iPassiveMouseMove(int mx, int my)
 
 void iMouse(int button, int state, int mx, int my)
 {
-
+	cout << mx<<" " << my<<endl;
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
 		for (int i = 0; i < 6; i++)
@@ -300,23 +335,10 @@ void iKeyboard(unsigned char key)
 
 	if (key == '\q')
 	{
-		/*tanjirowb1Index++;
-		tanjiroCordinateX += 90;
-		if (tanjirowb1Index >= 10)
-		{
-		tanjirowb1Index = 0;
-		}
-		if (tanjiroCordinateX >= 1300)
-		{
-		tanjiroCordinateX = 450;
-		}
-		running = false;
-		fight1 = true;
-		standPosition = false; */
-
 		iResumeTimer(countTimer);
+		CollisionCheck();
 		tanjirowb1Index = 0;
-		//tanjiroCordinateX = 450;
+		
 
 		if (tanjirowb1Index >= 9 && tanjiroCordinateX < 1300)
 		{
@@ -324,8 +346,6 @@ void iKeyboard(unsigned char key)
 			standPosition = true;
 			iPauseTimer(countTimer);
 			tanjirowb1Index = 0;
-
-
 		}
 
 		if (tanjirowb1Index <= 9 && tanjiroCordinateX < 1300){
@@ -334,20 +354,11 @@ void iKeyboard(unsigned char key)
 			fight1 = true;
 			standPosition = false;
 		}
-		CollisionCheck();
+		
 	}
 
 	if (key == '\e')
 	{
-		/*for (int i = 0; i < 9; i++)
-		{
-		tanjirobaIndex++;
-		tanjiroCordinateX += 100;
-		if (tanjirobaIndex == 8)
-		break;
-		}
-		*/
-
 		iResumeTimer(countTimer);
 		tanjirobaIndex = 0;
 		CollisionCheck();
@@ -357,8 +368,6 @@ void iKeyboard(unsigned char key)
 			standPosition = true;
 			iPauseTimer(countTimer);
 			tanjirobaIndex = 0;
-
-
 		}
 
 		if (tanjirobaIndex <= 10){
@@ -472,7 +481,8 @@ int main(void)
 
 	countTimer = iSetTimer(150, changeindex);
 	iPauseTimer(countTimer);
-	muzanAnimationtimer = iSetTimer(150, muzananimation);
+	muzanAnimationtimer = iSetTimer(140, muzananimation);
+	//iPauseTimer(muzanAnimationtimer);
 	iStart();
 	return 0;
 }
