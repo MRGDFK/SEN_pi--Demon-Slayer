@@ -19,6 +19,8 @@ char button[6][25] = { "Buttons\\play.png", "Buttons\\store.png", "Buttons\\opti
 //individual page
 char play[20] = "Background\\bg3.png";
 char store[25] = "Background\\store.png";
+char gameOverImage[30] = "Background\\gameover.png";
+char khelaparena[30] = "Background\\tanjiroded.png";
 
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -63,7 +65,7 @@ bool muzanatk1 = true;
 bool muzanatk2 = false;
 bool muzanatk3 = false;
 bool muzandefeated = false;
-
+bool tanjirodefeated = false;
 //stance
 bool standPosition = true;
 bool fight1 = false;
@@ -86,9 +88,9 @@ char healthbar[25] = "Background\\Healthbar.png";
 char muzanhealthBar[30] = "Background\\muzanhealthbar.png";
 
 //score
-int score = 0;
+int totalCoins:
 int countTimer;
-
+int randatk;
 //healthbar
 void Healthbar()
 {
@@ -106,6 +108,10 @@ void Healthbar()
 		iSetColor(204, 0, 0);
 
 	iFilledRectangle(150, 925, health, 37);
+	if (health <= 5)
+	{
+		tanjirodefeated = true;
+	}
 }
 void muzanHealthBar()
 {
@@ -142,13 +148,14 @@ void muzankibutsuji()
 	if (muzanatk2)
 	{
 		int muzanattack2 = iLoadImage(muzandatk[muzanatk2Index]);
-		iShowImage(muzanCordinateX, muzanCordinateY, 350, 316, muzanattack2);
+		iShowImage(muzanCordinateX, 65, 350, 316, muzanattack2);
 	}
 	if (muzanatk3)
 	{
 		int muzanattack3 = iLoadImage(muzandatk[muzanatk3Index]);
 		iShowImage(muzanCordinateX, muzanCordinateY, 350, 316, muzanattack3);
 	}
+
 	/*else
 	{
 		int muzanstanding = iLoadImage(muzanstand);
@@ -170,8 +177,12 @@ void muzananimation()
 	}*/
 	if (muzanatk1)
 	{	
-		
-		muzanCordinateX -= 30;
+		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
+		{
+			health -= 2;
+
+		}
+		muzanCordinateX -= 40;
 		if (muzanatkIndex < 15)
 		{
 			muzanatkIndex++;
@@ -190,7 +201,12 @@ void muzananimation()
 
 	if (muzanatk2)
 		{
-			muzanCordinateX -= 30;
+		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
+		{
+			health -= 3;
+
+		}
+			muzanCordinateX -= 40;
 			if (muzanatk2Index < 16)
 			{
 				muzanatk2Index++;
@@ -285,33 +301,154 @@ void playermovement()
 	}
 
 }
+void getTotalCoin()
+{
+	FILE *fp = fopen("TotalCoin.txt", "r");
+	if (fp == NULL)
+	{
+		printf("file not opened");
+	}
+	else
+	{
+		while (fscanf(fp, "%d",storeCoins) != EOF)
+		{
+			totalCoins++;
+		}
 
+		fclose(fp);
+	}
+}
+void showTotalCoin()
+{
+	if (totalCoins == 0)
+	{
+		iShowImage(0, 0, 860, 600, noHighScores);
+	}
+	if (totalCoins >= 1)
+	{
+		sprintf(scoreStr, "%d", nameScore[0].score);
+		iText(760, 390, scoreStr, GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	if (totalCoins >= 2)
+	{
+		sprintf(scoreStr, "%d", nameScore[1].score);
+		iText(760, 340, scoreStr, GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	if (totalCoins >= 3)
+	{
+		sprintf(scoreStr, "%d", nameScore[2].score);
+		iText(760, 290, scoreStr, GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	if (totalCoins >= 4)
+	{
+		sprintf(scoreStr, "%d", nameScore[3].score);
+		iText(760, 240, scoreStr, GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	if (totalCoins == 5)
+	{
+		sprintf(scoreStr, "%d", nameScore[4].score);
+		iText(760, 190, scoreStr, GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+}
 void CollisionCheck()
 {
 	if (fight1)
 	{
 		if ((tanjiroCordinateX + 250 >= muzanCordinateX) && (tanjiroCordinateX <= muzanCordinateX + 350))
 		{
-			muzanhealth -= 5;
+			muzanhealth -= 15;
 			storeCoins += 20;
-
+			//health -= 5;
 		}
 	}
 	if (fight2)
 	{
 		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
 		{
-			muzanhealth -= 15;
+			muzanhealth -= 30;
 			storeCoins += 60;
+			//health -= 5;
+		}
+	}
+	if (fight3)
+	{
+		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
+		{
+			muzanhealth -= 0;
+			storeCoins += 120;
+			//health -= 5;
+		}
+	}
+	if (fight4)
+	{
+		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
+		{
+			muzanhealth -= 60;
+			storeCoins += 200;
+			//			health -= 5;
+		}
+	}
+	/*
+	if (muzanatk1)
+	{
+		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
+		{
+			health -= 15;
 
 		}
 	}
+	
+	if (muzanatk2)
+	{
+		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
+		{
+			health -= 30;
 
+		}
+	}
+	*/
+	
+	if (muzanhealth <= 5)
+	{
+		muzandefeated = true;
+	}
+	
 }
 void ShowGameOver()
 {
-
+	if (muzandefeated)
+	{
+		int goim = iLoadImage(gameOverImage);
+		iShowImage(0, 0, 1920, 1080, goim);
+	}
+	if (tanjirodefeated)
+	{
+		int td = iLoadImage(khelaparena);
+		iShowImage(0, 0, 1920, 1080, td);
+	}
 }
+void randAttack()
+{
+	if (muzanatk1)
+	{
+		if (muzanatkIndex >= 15)
+		{
+			muzanatk1 = false;
+			muzanatk2 = true;
+			muzanatkIndex = 0;
+		}
+	}
+	if (muzanatk2)
+	{
+		if (muzanatk2Index >= 16)
+		{	
+			muzanatk2 = false;
+			muzanatk1 = true;
+			muzanatk2Index = 0;
+		}
+	}
+}
+
 void iDraw()
 {
 	iClear();
@@ -338,12 +475,15 @@ void iDraw()
 		muzanHealthBar();
 		playermovement();
 		muzankibutsuji();
-
+		
 		if (muzandefeated)
 		{
 			ShowGameOver();
 		}
-
+		if (tanjirodefeated)
+		{
+			ShowGameOver();
+		}
 	}
 	//Store
 	else if (gameState == 1)
@@ -383,15 +523,47 @@ void iMouse(int button, int state, int mx, int my)
 	cout << mx << " " << my << endl;
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		for (int i = 0; i < 6; i++)
+		if (gameState == -1)
 		{
-			if (mx >= bCordinate[i].x && mx <= bCordinate[i].x + 309 && my >= bCordinate[i].y && my <= bCordinate[i].y + 112)
+			for (int i = 0; i < 6; i++)
 			{
-				gameState = i;
-
-
+				if (mx >= bCordinate[i].x && mx <= bCordinate[i].x + 309 && my >= bCordinate[i].y && my <= bCordinate[i].y + 112)
+				{
+					gameState = i;
+				}
 			}
 		}
+		if (muzandefeated)
+		{
+			if (mx >= 261 && mx <= 650 && my >= 114 && my <= 253)
+			{
+				gameState = -1;
+			}
+			if (mx >= 786 && mx <= 1176 && my >= 114 && my <= 253)
+			{
+				gameState = 0;
+			}
+			if (mx >= 1300 && mx <= 1700 && my >= 114 && my <= 253)
+			{
+				exit(0);
+			}
+		}
+		if (tanjirodefeated)
+		{
+			if (mx >= 253 && mx <= 650 && my >= 215 && my <= 351)
+			{
+				gameState = -1;
+			}
+			if (mx >= 786 && mx <= 1176 && my >= 215 && my <= 351)
+			{
+				gameState = 0;
+			}
+			if (mx >= 1300 && mx <= 1700 && my >= 215 && my <= 351)
+			{
+				exit(0);
+			}
+		}
+		
 
 	}
 
@@ -413,9 +585,10 @@ void iKeyboard(unsigned char key)
 
 	if (key == '\q')
 	{
+		tanjirowb1Index = 0;
 		iResumeTimer(countTimer);
 		CollisionCheck();
-		tanjirowb1Index = 0;
+		
 
 
 		if (tanjirowb1Index >= 9 && tanjiroCordinateX < 1300)
@@ -456,19 +629,20 @@ void iKeyboard(unsigned char key)
 		}
 
 	}
-	if (key == '\c')
+	/*if (key == '\c')
 	{
+		tanjirowb11Index = 0;
 		iResumeTimer(countTimer);
 		CollisionCheck();
-		tanjirowb11Index = 0;
+		
 
-		if (tanjirowb11Index <= 9 && tanjiroCordinateX < 1300){
+		if (tanjirowb11Index <= 8 && tanjiroCordinateX < 1300){
 
 			running = false;
 			fight3 = true;
 			standPosition = false;
 		}
-		if (tanjirowb11Index >= 9 && tanjiroCordinateX < 1300)
+		if (tanjirowb11Index >= 8 && tanjiroCordinateX < 1300)
 		{
 			fight3 = false;
 			standPosition = true;
@@ -478,22 +652,24 @@ void iKeyboard(unsigned char key)
 
 
 
-	}
+	}*/
 
 	if (key == '\z')
 	{
+		
+		tanjirohkIndex = 0;
 		iResumeTimer(countTimer);
 		CollisionCheck();
-		tanjirohkIndex = 0;
+		
 
-		if (tanjirohkIndex <= 11 && tanjiroCordinateX < 1300){
+		if (tanjirohkIndex <= 10 && tanjiroCordinateX < 1300){
 
 			running = false;
 			fight4 = true;
 			standPosition = false;
 		}
 
-		if (tanjirohkIndex >= 11 && tanjiroCordinateX < 1300)
+		if (tanjirohkIndex >= 10 && tanjiroCordinateX < 1300)
 		{
 			fight4 = false;
 			standPosition = true;
@@ -571,30 +747,24 @@ void changeindex()
 	{
 		tanjirobaIndex++;
 	}
-	else if ((tanjirowb1Index >= 0 && tanjirowb1Index <= 8) && (tanjiroCordinateX >= 450 && tanjiroCordinateX <= 1350) && fight2)
+	else if ((tanjirowb1Index >= 0 && tanjirowb1Index <= 8) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight2)
 	{
 		tanjirowb1Index++;
-		tanjiroCordinateX += 90;
+		//tanjiroCordinateX += 90;
 
 	}
-	else if ((tanjirowb11Index >= 0 && tanjirowb11Index <= 8) && (tanjiroCordinateX >= 450 && tanjiroCordinateX <= 1350) && fight3)
+	/*else if ((tanjirowb11Index >= 0 && tanjirowb11Index <= 7) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight3)
 	{
 		tanjirowb11Index++;
-		tanjiroCordinateX += 90;
-
-	}
-	else if ((tanjirohkIndex >= 0 && tanjirohkIndex <= 9) && (tanjiroCordinateX >= 450 && tanjiroCordinateX <= 1350) && fight4)
-	{
-		tanjirohkIndex++;
-		tanjiroCordinateX += 85;
-
-	}
-	/*if (tanjirowb1Index >= 0 && tanjirowb1Index <= 8 && (tanjiroCordinateX >= 600 && tanjiroCordinateX <= 1650))
-	{
-	tanjirowb1Index++;
-	//tanjiroCordinateX += 90;
+		//tanjiroCordinateX += 90;
 
 	}*/
+	else if ((tanjirohkIndex >= 0 && tanjirohkIndex <= 9) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight4)
+	{
+		tanjirohkIndex++;
+		//tanjiroCordinateX += 85;
+
+	}
 
 }
 
@@ -621,6 +791,7 @@ int main(void)
 	countTimer = iSetTimer(150, changeindex);
 	iPauseTimer(countTimer);
 	muzanAnimationtimer = iSetTimer(140, muzananimation);
+	randatk = iSetTimer(150, randAttack);
 	//iPauseTimer(muzanAnimationtimer);
 	iStart();
 	return 0;
