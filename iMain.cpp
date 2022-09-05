@@ -30,6 +30,7 @@ char sfx[30] = "Background\\sfx.png";
 //power limit
 int hk = 0;
 int wb11 = 0;
+int wb1 = 0;
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 bool musicon = true;
@@ -43,7 +44,7 @@ char rtanjiro[6][25] = { "Tanjiro\\r.dour1.png", "Tanjiro\\r.dour2.png", "Tanjir
 char tanjirostand[25] = "Tanjiro\\kharayase.png";
 char tanjirowaterbreathing1[10][25] = { "water1\\wb1.png", "water1\\wb2.png", "water1\\wb3.png", "water1\\wb4.png", "water1\\wb5.png", "water1\\wb6.png", "water1\\wb7.png", "water1\\wb8.png", "water1\\wb9.png", "water1\\wb10.png" };
 char tanjirobasicattack[11][25] = { "battack\\ba0.png", "battack\\ba0.png", "battack\\ba1.png", "battack\\ba2.png", "battack\\ba3.png", "battack\\ba4.png", "battack\\ba5.png", "battack\\ba6.png", "battack\\ba7.png", "battack\\ba8.png", "battack\\ba9.png" };
-char tanjirowaterbreathing11[9][25] = { "water11\\wbd1.png", "water11\\wbd2.png", "water11\\wbd3.png", "water11\\wbd4.png", "water11\\wbd5.png", "water11\\wbd6.png", "water11\\wbd7.png", "water11\\wbd8.png", "water11\\wbd9.png" };
+char tanjirowaterbreathing11[7][25] = { "water11\\wb1.png", "water11\\wb2.png", "water11\\wb3.png", "water11\\wbd1.png", "water11\\wbd2.png", "water11\\wbd3.png", "water11\\wbd4.png" };
 char hinogamikagura[11][25] = { "hinogamikagura\\thk1.png", "hinogamikagura\\thk2.png", "hinogamikagura\\thk3.png", "hinogamikagura\\thk4.png", "hinogamikagura\\thk5.png", "hinogamikagura\\thk6.png", "hinogamikagura\\thk7.png", "hinogamikagura\\thk8.png", "hinogamikagura\\thk9.png", "hinogamikagura\\thk10.png", "hinogamikagura\\thk11.png" };
 int tanjiroCordinateX = 450;
 int tanjiroCordinateY = 100;
@@ -384,7 +385,7 @@ void CollisionCheck()
 	{
 		if ((tanjiroCordinateX + 250 >= muzanCordinateX) && (tanjiroCordinateX <= muzanCordinateX + 350))
 		{
-			muzanhealth -= 15;
+			muzanhealth -= 10;
 			storeCoins += 20;
 			//health -= 5;
 		}
@@ -393,17 +394,25 @@ void CollisionCheck()
 	{
 		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
 		{
-			muzanhealth -= 30;
+			muzanhealth -= 15;
 			storeCoins += 60;
 			//health -= 5;
 		}
 	}
-
+	else if (fight3)
+	{
+		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
+		{
+			muzanhealth -= 30;
+			storeCoins += 200;
+			//health -= 5;
+		}
+	}
 	else if (fight4)
 	{
 		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
 		{
-			muzanhealth -= 60;
+			muzanhealth -= 50;
 			storeCoins += 200;
 			//health -= 5;
 		}
@@ -474,7 +483,8 @@ void randAttack()
 
 void playGame()
 {
-	
+	iResumeTimer(muzanAnimationtimer);
+	iResumeTimer(randatk);
 	int img3 = iLoadImage(play);
 	iShowImage(0, 0, 1920, 1080, img3);
 	int nav = iLoadImage(navigation);
@@ -876,8 +886,8 @@ void iKeyboard(unsigned char key)
 	if (key == '\q')
 	{
 		
-		wb11++;
-		if (wb11 <= 3)
+		wb1++;
+		if (wb1 <= 5)
 		{
 			fight2 = true;
 			tanjirowb1Index = 0;
@@ -924,33 +934,42 @@ void iKeyboard(unsigned char key)
 		
 
 	}
-	/*if (key == '\c')
-	{
-		tanjirowb11Index = 0;
-		iResumeTimer(countTimer);
-		CollisionCheck();
+	if (key == '\c')
+	{	
+		fight2 = false;
+		fight4 = false;
+		wb11++;
+		if (wb11 <= 3)
+		{
+			fight3 = true;
+			tanjirowb11Index = 0;
+			iResumeTimer(countTimer);
+			CollisionCheck();
+
+
+			if (tanjirowb11Index <= 8 && tanjiroCordinateX < 1300){
+
+				running = false;
+				fight3 = true;
+				standPosition = false;
+			}
+			if (tanjirowb11Index >= 8 && tanjiroCordinateX < 1300)
+			{
+				fight3 = false;
+				standPosition = true;
+				iPauseTimer(countTimer);
+				tanjirowb11Index = 0;
+			}
+		}
 		
 
-		if (tanjirowb11Index <= 8 && tanjiroCordinateX < 1300){
-
-			running = false;
-			fight3 = true;
-			standPosition = false;
-		}
-		if (tanjirowb11Index >= 8 && tanjiroCordinateX < 1300)
-		{
-			fight3 = false;
-			standPosition = true;
-			iPauseTimer(countTimer);
-			tanjirowb11Index = 0;
-		}
 
 
-
-	}*/
+	}
 
 	if (key == '\z')
-	{
+	{	
+		fight3 = false;
 		fight2 = false;
 		hk++;
 		
@@ -1051,12 +1070,12 @@ void changeindex()
 		//tanjiroCordinateX += 90;
 
 	}
-	/*else if ((tanjirowb11Index >= 0 && tanjirowb11Index <= 7) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight3)
+	if ((tanjirowb11Index >= 0 && tanjirowb11Index <= 5) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight3)
 	{
 		tanjirowb11Index++;
 		//tanjiroCordinateX += 90;
 
-	}*/
+	}
 	if ((tanjirohkIndex >= 0 && tanjirohkIndex <= 9) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight4)
 	{
 		tanjirohkIndex++;
@@ -1090,7 +1109,8 @@ int main(void)
 	iPauseTimer(countTimer);
 	muzanAnimationtimer = iSetTimer(140, muzananimation);
 	randatk = iSetTimer(150, randAttack);
-	//iPauseTimer(muzanAnimationtimer);
+	iPauseTimer(muzanAnimationtimer);
+	iPauseTimer(randatk);
 	iStart();
 	return 0;
 }
