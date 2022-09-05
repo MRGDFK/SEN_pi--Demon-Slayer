@@ -395,7 +395,7 @@ void CollisionCheck()
 		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
 		{
 			muzanhealth -= 15;
-			storeCoins += 60;
+			storeCoins += 40;
 			//health -= 5;
 		}
 	}
@@ -404,7 +404,7 @@ void CollisionCheck()
 		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
 		{
 			muzanhealth -= 30;
-			storeCoins += 200;
+			storeCoins += 120;
 			//health -= 5;
 		}
 	}
@@ -797,6 +797,10 @@ void iMouse(int button, int state, int mx, int my)
 			if (mx >= 261 && mx <= 650 && my >= 114 && my <= 253)
 			{
 				gameState = -1;
+				if (gameState == -1)
+				{
+					muzandefeated = false;
+				}
 			}
 			if (mx >= 786 && mx <= 1176 && my >= 114 && my <= 253)
 			{
