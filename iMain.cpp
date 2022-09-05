@@ -22,12 +22,18 @@ char play[20] = "Background\\bg3.png";
 char store[25] = "Background\\store.png";
 char gameOverImage[30] = "Background\\gameover.png";
 char khelaparena[30] = "Background\\tanjiroded.png";
+char credit[30] = "Background\\credit scene.png";
+char help[30] = "Background\\help.png";
+char navigation[30] = "Background\\help2.png";
+char sfx[30] = "Background\\sfx.png";
+
 //power limit
 int hk = 0;
 int wb11 = 0;
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::Idraw Here::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 bool musicon = true;
+
 int attack, autoindex;
 int gameState = -1;
 
@@ -95,7 +101,21 @@ int totalCoins;
 int countTimer;
 int randatk;
 char scoreStr[100000];
+//highlight
+//char hl[30] = "Background\\highlight.png";
+bool playh;
+bool storeh;
+bool optionsh;
+bool helph;
+bool credith;
+bool exith;
+bool backh;
+bool onh;
+bool offh;
+
 //healthbar
+//replay feature
+bool slay = false;
 void Healthbar()
 {
 
@@ -112,7 +132,7 @@ void Healthbar()
 		iSetColor(204, 0, 0);
 
 	iFilledRectangle(150, 925, health, 37);
-	if (health <= 5)
+	if (health <= 1)
 	{
 		tanjirodefeated = true;
 	}
@@ -183,7 +203,7 @@ void muzananimation()
 	{	
 		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
 		{
-			health -= 2;
+			health -= 1;
 
 		}
 		muzanCordinateX -= 40;
@@ -207,7 +227,7 @@ void muzananimation()
 		{
 		if (tanjiroCordinateX + 250 > muzanCordinateX && tanjiroCordinateX<muzanCordinateX + 350)
 		{
-			health -= 3;
+			health -= 2;
 
 		}
 			muzanCordinateX -= 40;
@@ -305,6 +325,7 @@ void playermovement()
 	}
 
 }
+
 /*
 void getTotalCoin()
 {
@@ -384,7 +405,7 @@ void CollisionCheck()
 		{
 			muzanhealth -= 60;
 			storeCoins += 200;
-			//			health -= 5;
+			//health -= 5;
 		}
 	}
 	/*
@@ -427,6 +448,7 @@ void gameOver()
 	muzanatk2 = false;
 	iPauseTimer(randatk);
 	iPauseTimer(muzanAnimationtimer);
+	
 }
 void randAttack()
 {
@@ -450,6 +472,42 @@ void randAttack()
 	}
 }
 
+void playGame()
+{
+	
+	int img3 = iLoadImage(play);
+	iShowImage(0, 0, 1920, 1080, img3);
+	int nav = iLoadImage(navigation);
+	iShowImage(50, 600, 300, 300, nav);
+
+	Healthbar();
+	muzanHealthBar();
+	playermovement();
+	muzankibutsuji();
+
+	//tanjirodefeated = true;
+	if (muzanhealth <= 1)
+	{
+		muzandefeated = true;
+	}
+	if (muzandefeated)
+	{
+		ShowGameOver();
+		gameOver();
+		sprintf_s(scoreStr, "%d", storeCoins);
+		iSetColor(255, 255, 255);
+		iText(970, 430, scoreStr, GLUT_BITMAP_TIMES_ROMAN_24);
+		tanjirodefeated = false;
+		
+	}
+
+	if (tanjirodefeated)
+	{
+		gameOver();
+		ShowGameOver();
+
+	}
+}
 void iDraw()
 {
 	iClear();
@@ -457,10 +515,39 @@ void iDraw()
 	if (gameState == -1)
 	{
 		//HomePage(Menu)
-
+		
 		int img = iLoadImage(homemenu);
 		iShowImage(0, 0, 1920, 1080, img);
-
+		if (playh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(702, 806, 500, 200, high);
+		}
+		if (storeh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(702, 656, 500, 200, high);
+		}
+		if (optionsh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(702, 506, 500, 200, high);
+		}
+		if (helph)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(702, 356, 500, 200, high);
+		}
+		if (credith)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(702, 206, 500, 200, high);
+		}
+		if (exith)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(702, 56, 500, 200, high);
+		}
 		for (int i = 0; i < 6; i++)
 		{
 			int img2 = iLoadImage(button[i]);
@@ -469,40 +556,72 @@ void iDraw()
 	}
 	//PLAY WINDOW
 	else if (gameState == 0)
-	{
-		int img3 = iLoadImage(play);
-		iShowImage(0, 0, 1920, 1080, img3);
-		Healthbar();
-		muzanHealthBar();
-		playermovement();
-		muzankibutsuji();
-		if (muzanhealth <= 1)
-		{
-			muzandefeated = true;
-		}
-		if (muzandefeated)
-		{
-			ShowGameOver();
-			gameOver();
-			sprintf_s(scoreStr, "%d", storeCoins);
-			iSetColor(255, 255, 255);
-			iText(970, 430, scoreStr,GLUT_BITMAP_TIMES_ROMAN_24);
-			tanjirodefeated = false;
-			
-		}
-		if (tanjirodefeated)
-		{	
-			gameOver();
-			ShowGameOver();
-			
-		}
+	{	
+		
+		playGame();
+		
 	}
 	//Store
 	else if (gameState == 1)
 	{
+		
 		int img4 = iLoadImage(store);
 		iShowImage(0, 0, 1920, 1080, img4);
+
+		if (backh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(613, 215, 670, 270, high);
+		}
+
 	}
+	else if (gameState == 2)
+	{
+		int options = iLoadImage(sfx);
+		iShowImage(0, 0, 1920, 1080, options);
+
+		if (onh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(660, 415, 500, 200, high);
+		}
+
+		if (offh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(660, 257, 500, 200, high);
+		}
+		if (backh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(1370, 51, 500, 200, high);
+		}
+
+	}
+	else if (gameState == 3)
+	{
+		int img5 = iLoadImage(help);
+		iShowImage(0, 0, 1920, 1080, img5);
+
+		if (backh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(1370, 51, 500, 200, high);
+		}
+	}
+	
+	else if (gameState == 4)
+	{
+		int img6 = iLoadImage(credit);
+		iShowImage(0, 0, 1920, 1080, img6);
+
+		if (backh)
+		{
+			int high = iLoadImage("Background\\hl.png");
+			iShowImage(1370, 51, 500, 200, high);
+		}
+	}
+
 	else if (gameState == 5)
 	{
 		exit(0);
@@ -526,8 +645,126 @@ void iMouseMove(int mx, int my)
 }
 //*******************************************************************ipassiveMouse***********************************************************************//
 void iPassiveMouseMove(int mx, int my)
-{
+{	
+	if (gameState == -1)
+	{
+		if (mx >= 800 && mx <= 1106 && my >= 851 && my <= 961)
+		{
+			playh = true;
+		}
+		else
+		{
+			playh = false;
+		}
 
+		if (mx >= 800 && mx <= 1106 && my >= 701 && my <= 811)
+		{
+			storeh = true;
+		}
+		else
+		{
+			storeh = false;
+		}
+
+		if (mx >= 800 && mx <= 1106 && my >= 551 && my <= 661)
+		{
+			optionsh = true;
+		}
+		else
+		{
+			optionsh = false;
+		}
+
+		if (mx >= 800 && mx <= 1106 && my >= 401 && my <= 511)
+		{
+			helph = true;
+		}
+		else
+		{
+			helph = false;
+		}
+
+		if (mx >= 800 && mx <= 1106 && my >= 251 && my <= 361)
+		{
+			credith = true;
+		}
+		else
+		{
+			credith = false;
+		}
+
+		if (mx >= 800 && mx <= 1106 && my >= 101 && my <= 211)
+		{
+			exith = true;
+		}
+		else
+		{
+			exith = false;
+		}
+	}
+	if (gameState == 1)
+	{
+		if (mx >= 748 && mx <= 1149 && my >= 277 && my <= 426)
+		{
+			backh = true;
+		}
+		else
+		{
+			backh = false;
+		}
+	}
+	if (gameState == 2)
+	{
+		if (mx >= 765 && mx <= 1056 && my >= 460 && my <= 570)
+		{
+			onh = true;
+		}
+		else
+		{
+			onh = false;
+		}
+		if (mx >= 765 && mx <= 1056 && my >= 300 && my <= 410)
+		{
+			offh = true;
+		}
+		else
+		{
+			offh = false;
+		}
+
+		if (mx >= 1470 && mx <= 1770 && my >= 105 && my <= 205)
+		{
+			backh = true;
+		}
+		else
+		{
+			backh = false;
+		}
+	}
+	if (gameState == 3)
+	{
+		if (mx >= 1470 && mx <= 1770 && my >= 105 && my <= 205)
+		{
+			backh = true;
+		}
+		else
+		{
+			backh = false;
+		}
+	
+	}
+	if (gameState == 4)
+	{
+		if (mx >= 1470 && mx <= 1770 && my >= 105 && my <= 205)
+		{
+			backh = true;
+		}
+		else
+		{
+			backh = false;
+		}
+		
+	}
 }
 
 void iMouse(int button, int state, int mx, int my)
@@ -554,6 +791,7 @@ void iMouse(int button, int state, int mx, int my)
 			if (mx >= 786 && mx <= 1176 && my >= 114 && my <= 253)
 			{
 				gameState = 0;
+				
 			}
 			if (mx >= 1300 && mx <= 1700 && my >= 114 && my <= 253)
 			{
@@ -563,19 +801,59 @@ void iMouse(int button, int state, int mx, int my)
 		if (tanjirodefeated)
 		{
 			if (mx >= 253 && mx <= 650 && my >= 215 && my <= 351)
-			{
+			{	
 				gameState = -1;
 			}
 			if (mx >= 786 && mx <= 1176 && my >= 215 && my <= 351)
-			{
+			{	
 				gameState = 0;
+			
 			}
 			if (mx >= 1300 && mx <= 1700 && my >= 215 && my <= 351)
 			{
 				exit(0);
 			}
 		}
-		
+		if (gameState == 1)
+		{
+			if (mx >= 748 && mx <= 1150 && my >= 277 && my <= 426)
+			{
+				gameState = -1;
+			}
+		}
+		if (gameState == 2)
+		{
+			if (mx >= 1470 && mx <= 1770 && my >= 105 && my <= 205)
+			{
+				gameState = -1;
+			}
+			if (mx >= 770 && mx <= 1055 && my >= 466 && my <= 565)
+			{
+				PlaySound("Music\\menusfx.wav", NULL, SND_LOOP | SND_ASYNC);
+				musicon = true;
+			}
+			if (mx >= 770 && mx <= 1055 && my >= 310 && my <= 410)
+			{
+				if (musicon){
+					PlaySound(0, 0, 0);
+					musicon = false;
+				}
+			}
+		}
+		if (gameState == 3)
+		{
+			if (mx >= 1470 && mx <= 1770 && my >= 105 && my <= 205)
+			{
+				gameState = -1;
+			}
+		}
+		if (gameState == 4)
+		{
+			if (mx >= 1480 && mx <= 1770 && my >= 105 && my <= 205)
+			{
+				gameState = -1;
+			}
+		}
 
 	}
 
@@ -673,7 +951,7 @@ void iKeyboard(unsigned char key)
 
 	if (key == '\z')
 	{
-		
+		fight2 = false;
 		hk++;
 		
 
@@ -767,7 +1045,7 @@ void changeindex()
 	{
 		tanjirobaIndex++;
 	}
-	else if ((tanjirowb1Index >= 0 && tanjirowb1Index <= 8) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight2)
+	if ((tanjirowb1Index >= 0 && tanjirowb1Index <= 8) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight2)
 	{
 		tanjirowb1Index++;
 		//tanjiroCordinateX += 90;
@@ -779,7 +1057,7 @@ void changeindex()
 		//tanjiroCordinateX += 90;
 
 	}*/
-	else if ((tanjirohkIndex >= 0 && tanjirohkIndex <= 9) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight4)
+	if ((tanjirohkIndex >= 0 && tanjirohkIndex <= 9) && (tanjiroCordinateX >= 400 && tanjiroCordinateX <= 1400) && fight4)
 	{
 		tanjirohkIndex++;
 		//tanjiroCordinateX += 85;
